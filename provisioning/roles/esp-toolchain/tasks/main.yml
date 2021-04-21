@@ -1,0 +1,44 @@
+---
+- name: Download toolchain
+  become: true
+  get_url:
+    url: "{{ esp_toolchain_url }}"
+    dest: "/home/{{ build_user }}/"
+    
+- name: Create toolchain dir
+  become: true
+  file:
+    path: "{{ toolchain_dir }}"
+    state: directory
+    mode: '0755'
+    recurse: yes
+    owner: "{{ build_user }}"
+    group: "{{ build_user }}"
+
+- name: Extract toolchain
+  become: true
+  unarchive:
+    src: "/home/{{ build_user }}/{{ esp_toolchain_name }}"
+    dest: "{{ toolchain_dir }}/"
+    remote_src: yes
+
+- name: Change ownership of toolchain
+  become: true
+  file:
+    path: "{{ toolchain_dir }}"
+    recurse: yes
+    owner: "{{ build_user }}"
+    group: "{{ build_user }}"
+
+# - name: Update  PATH environment variable
+#   shell: export PATH="$PATH:$HOME/esp/xtensa-lx106-elf/bin"
+- name: Update  PATH environment variable
+  shell: echo $PATH
+  environment:
+    PATH: "{{ toolchain_dir }}/xtensa-lx106-elf/bin:{{ ansible_env.PATH }}"
+
+- name: Clean
+  become: true
+  file:
+    path: "/home/{{ build_user }}/{{ esp_toolchain_name }}"
+    state: absent

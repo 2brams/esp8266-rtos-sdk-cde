@@ -7,5 +7,6 @@
  
   roles:
     - esp8266-builder
+    - esp-toolchain
    
     

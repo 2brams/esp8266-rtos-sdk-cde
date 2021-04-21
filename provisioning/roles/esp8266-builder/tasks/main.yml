@@ -79,7 +79,7 @@
     name: "{{ build_user }}"
     comment: ESP8266 Builder
     group: '{{ build_user }}'
-    groups: [sudo]
+    groups: [sudo,dialout]
     append: yes
     uid: "{{ u_id.stdout | int}}"
         # mkpasswd --method=sha-512
