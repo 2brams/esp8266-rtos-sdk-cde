@@ -1,0 +1,44 @@
+{
+    "_comment": "Build a docker image for ESP8266E-12 CDE",
+    "_author": "Ibrahim Khakha <ibrahimkhakha@gmail.com>",
+    "variables": {
+      "cde_version": "0.1",
+      "docker_repo": "2brams",
+      "build_user": "esp8266"
+    },
+    "builders": [{
+      "type": "docker",
+      "image": "ubuntu:18.04",
+      "commit": true,
+      "changes": [
+        "USER {{user `build_user`}}",
+        "WORKDIR /home/{{user `build_user`}}"
+      ]
+    }],
+    "provisioners":[
+      {
+        "type": "shell",
+        "inline": [
+          "apt-get -y update",
+          "apt-get -y install python3"
+        ]
+      },
+      {
+        "type": "ansible",
+        "user": "root",
+        "playbook_file": "provisioning/setup-cde.yml",
+        "extra_arguments": [
+          "-e env_build_user={{user `build_user`}}"
+        ]
+      }
+    ],
+    "post-processors": [
+      [
+        {
+          "type": "docker-tag",
+          "repository": "{{user `docker_repo`}}",
+          "tag": "{{user `cde_version`}}"
+        }
+      ]
+    ]
+  }

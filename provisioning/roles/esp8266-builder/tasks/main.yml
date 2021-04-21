@@ -1,0 +1,92 @@
+---
+- name: Run the equivalent of "apt-get update" as a separate step
+  become: true
+  apt:
+    update_cache: yes
+
+- name: Update apt
+  become: true
+  apt:
+    name: "*"
+    state: latest
+
+- name: Install basic tools
+  become: true
+  apt:
+    name: [
+    'gawk',
+    'wget',
+    # 'git-core',
+    'python3',
+    'python3-pip',
+    # 'build-essential',
+    # 'cmake',
+    # 'libusb-1.0-0-dev',
+    # 'rsync',
+    'locales',
+    # 'pkg-config',
+    # 'udev',
+    # 'automake',
+    # 'autoconf',
+    # 'libtool',
+    'sudo',
+    'gcc', 
+    'git',  
+    'make', 
+    'libncurses-dev', 
+    'flex', 
+    'bison', 
+    'gperf',  
+    'python-serial'
+    ]
+    state: present
+
+- name: Update python3-pip
+  become: true
+  command: "python3 -m pip install --upgrade pip"
+
+- name: Ensure UTF-8 local exists
+  locale_gen:
+    name: fr_FR.UTF-8
+    state: present
+
+- name: set default locale
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    line: export LC_ALL="fr_FR.UTF-8"
+    create: yes
+
+- name: Get uid 
+  shell: id -u
+  register: u_id
+  delegate_to: 127.0.0.1
+
+- name: Get gid
+  shell: id -g
+  register: g_id
+  delegate_to: 127.0.0.1
+    
+- name: Create groupe
+  become: true
+  group:
+    name: "{{ build_user }}"
+    gid: "{{ g_id.stdout | int }}"
+    state: present
+
+- name: Create user
+  become: true
+  user:
+    name: "{{ build_user }}"
+    comment: ESP8266 Builder
+    group: '{{ build_user }}'
+    groups: [sudo]
+    append: yes
+    uid: "{{ u_id.stdout | int}}"
+        # mkpasswd --method=sha-512
+    password: '$6$gNHudnIfuByzsC$9gvGenBpA7f2C3aQk/wTjxHzMGAm1HH07a3vn0AcnYPMYOIjgHCmPYs7FrCFvRMtJccZkRQBLcs2oWEqIKt1H0'
+    shell: /bin/bash       
+    system: no             
+    createhome: yes        
+    home: /home/{{ build_user }}  
+
+
