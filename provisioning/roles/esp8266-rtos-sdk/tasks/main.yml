@@ -1,0 +1,43 @@
+---
+
+- name: Create download dir
+  become: true
+  file:
+    path: "{{ toolchain_dir }}/ESP8266_RTOS_SDK"
+    state: directory
+    mode: '0755'
+    recurse: yes
+    owner: "{{ build_user }}"
+    group: "{{ build_user }}"
+
+- name: Download ESP8266_RTOS_SDK
+  become: true
+  git:
+    repo: 'https://github.com/espressif/ESP8266_RTOS_SDK.git'
+    dest: "{{ toolchain_dir }}/ESP8266_RTOS_SDK"
+    depth: "1"
+    recursive: yes
+
+- name: Change ownership of ESP8266_RTOS_SDK
+  become: true
+  file:
+    path: "{{ toolchain_dir }}/ESP8266_RTOS_SDK"
+    recurse: yes
+    owner: "{{ build_user }}"
+    group: "{{ build_user }}"
+
+- name: Export IDF_PATH.
+  lineinfile:
+    path: "/home/{{ build_user }}/.bashrc"
+    line: export IDF_PATH={{ toolchain_dir }}/ESP8266_RTOS_SDK
+
+- name: Export ESP8266_RTOS_SDK/tools.
+  lineinfile:
+    path: "/home/{{ build_user }}/.bashrc"
+    line: export PATH=$HOME"/esp/ESP8266_RTOS_SDK/tools:"$PATH
+
+- name: Install specified python requirements and custom Index URL
+  become: true
+  pip:
+    requirements: /home/{{ build_user }}/esp/ESP8266_RTOS_SDK/requirements.txt
+    extra_args: '--user' 

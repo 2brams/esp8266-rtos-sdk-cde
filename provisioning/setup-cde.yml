@@ -8,5 +8,6 @@
   roles:
     - esp8266-builder
     - esp-toolchain
+    - esp8266-rtos-sdk
    
     

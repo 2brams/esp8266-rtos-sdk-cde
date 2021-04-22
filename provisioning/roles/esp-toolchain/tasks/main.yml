@@ -30,12 +30,12 @@
     owner: "{{ build_user }}"
     group: "{{ build_user }}"
 
-# - name: Update  PATH environment variable
-#   shell: export PATH="$PATH:$HOME/esp/xtensa-lx106-elf/bin"
-- name: Update  PATH environment variable
-  shell: echo $PATH
-  environment:
-    PATH: "{{ toolchain_dir }}/xtensa-lx106-elf/bin:{{ ansible_env.PATH }}"
+
+- name: Export xtensa-lx106-elf.
+  lineinfile:
+    path: "/home/{{ build_user }}/.bashrc"
+    line: export PATH="$PATH:$HOME/esp/xtensa-lx106-elf/bin"
+
 
 - name: Clean
   become: true
