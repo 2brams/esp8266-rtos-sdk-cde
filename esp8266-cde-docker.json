@@ -3,7 +3,7 @@
     "_author": "Ibrahim Khakha <ibrahimkhakha@gmail.com>",
     "variables": {
       "cde_version": "0.1",
-      "docker_repo": "2brams",
+      "docker_repo": "2brams/esp_cde_rtos",
       "build_user": "esp8266"
     },
     "builders": [{
